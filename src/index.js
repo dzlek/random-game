@@ -61,8 +61,8 @@ function renderGame() {
   if (snakeX === foodPosition.x && snakeY === foodPosition.y) {
     totalScore++;
     foodPosition = {
-      x: Math.floor(Math.random() * 30 + 1) * unit,
-      y: Math.floor(Math.random() * 30 + 3) * unit,
+      x: Math.floor(Math.random() * 57 + 1) * unit,
+      y: Math.floor(Math.random() * 26 + 3) * unit,
     };
   } else {
     snakeBody.pop();
