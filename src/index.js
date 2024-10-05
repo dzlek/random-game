@@ -2,10 +2,10 @@ const canvasElement = document.getElementById("game");
 const context = canvasElement.getContext("2d");
 
 const background = new Image();
-background.src = "./assets/images/layout.png";
+background.src = "/random-game/assets/images/layout.png";
 
 const foodImage = new Image();
-foodImage.src = "./assets/svg/rss-logo.svg";
+foodImage.src = "/random-game/assets/svg/rss-logo.svg";
 
 const unit = 32;
 const goal = 5;
