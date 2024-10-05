@@ -66,6 +66,7 @@ function renderGame() {
 
   if (snakeX === foodPosition.x && snakeY === foodPosition.y) {
     totalScore++;
+    beep(50, 0.05);
     foodPosition = {
       x: Math.floor(Math.random() * 57 + 1) * unit,
       y: Math.floor(Math.random() * 26 + 3) * unit,
@@ -123,6 +124,33 @@ function finishGame() {
   highScores.forEach((score, index) => {
     context.fillText(`${index + 1}. ${score}`, 500, 632 + index * 32);
   });
+}
+
+function beep(f, d) {
+  var volume = 10000,
+    u1 = -volume,
+    u2 = volume,
+    u = u1,
+    samples = [],
+    titlestring = decodeURIComponent(
+      escape(
+        window.atob("UklGRgAAAABXQVZFZm10IBAAAAABAAIARMKsAAAQwrECAAQAEABkYXRh")
+      )
+    ),
+    title = [];
+  for (i = 0; i < titlestring.length; i++) title[i] = titlestring.charCodeAt(i);
+  for (i = 0; i < d * 44100; i++) {
+    u += f;
+    if (u > u2) u = u1;
+    samples[i] = u;
+  }
+  var outbuffer = new Int16Array(title.length / 2 + samples.length * 2);
+  for (i = 0; i < title.length; i += 2)
+    outbuffer[i / 2] = title[i] + title[i + 1] * 256;
+  for (i = 0; i < samples.length * 2; i++)
+    outbuffer[i * 2 + 44] = outbuffer[i * 2 + 45] = samples[i];
+  var audio = new Audio(URL.createObjectURL(new Blob([outbuffer])));
+  audio.play();
 }
 
 let gameInterval = setInterval(renderGame, 100);
