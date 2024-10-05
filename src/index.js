@@ -5,9 +5,10 @@ const background = new Image();
 background.src = "../public/assets/images/layout.png";
 
 const foodImage = new Image();
-foodImage.src = "../public/assets/images/food.png";
+foodImage.src = "../public/assets/svg/rss-logo.svg";
 
 const unit = 32;
+const goal = 5;
 let totalScore = 0;
 
 let foodPosition = {
@@ -37,23 +38,28 @@ function changeDirection(event) {
 
 function checkCollision(head, array) {
   array.forEach((segment) => {
-    if (head.x === segment.x && head.y === segment.y)
-      clearInterval(gameInterval);
+    if (head.x === segment.x && head.y === segment.y) finishGame();
   });
 }
 
 function renderGame() {
   context.drawImage(background, 0, 0);
-  context.drawImage(foodImage, foodPosition.x, foodPosition.y);
+  context.drawImage(foodImage, 45, 20, 32, 32);
+  context.drawImage(foodImage, foodPosition.x, foodPosition.y, 32, 32);
 
   for (let i = 0; i < snakeBody.length; i++) {
-    context.fillStyle = i === 0 ? "green" : "red";
+    context.fillStyle = i === 0 ? "yellow" : "red";
     context.fillRect(snakeBody[i].x, snakeBody[i].y, unit, unit);
   }
 
   context.fillStyle = "white";
   context.font = "50px Arial";
   context.fillText(totalScore, unit * 2.5, unit * 1.7);
+  context.fillText(
+    `Goal: ${goal - totalScore > 0 ? goal - totalScore : "You already win"}`,
+    unit * 36.5,
+    unit * 1.7
+  );
 
   let snakeX = snakeBody[0].x;
   let snakeY = snakeBody[0].y;
@@ -74,7 +80,7 @@ function renderGame() {
     snakeY < 3 * unit ||
     snakeY > unit * 28
   ) {
-    clearInterval(gameInterval);
+    finishGame();
   }
 
   if (currentDirection === "left") snakeX -= unit;
@@ -87,6 +93,36 @@ function renderGame() {
   checkCollision(newHead, snakeBody);
 
   snakeBody.unshift(newHead);
+}
+
+function finishGame() {
+  let highScores = JSON.parse(localStorage.getItem("highScores")) || [];
+
+  highScores.push(totalScore);
+
+  highScores.sort((a, b) => b - a);
+  highScores = highScores.slice(0, 10);
+
+  localStorage.setItem("highScores", JSON.stringify(highScores));
+
+  clearInterval(gameInterval);
+  context.fillStyle = "black";
+  context.font = "150px Arial";
+  context.fillText(
+    `You ${totalScore >= goal ? "win" : "lost"}! Score: ${totalScore}`,
+    200,
+    400
+  );
+
+  context.fillStyle = "white";
+  context.fillRect(450, 550, 320, 370);
+  context.fillStyle = "black";
+  context.font = "25px Arial";
+  context.fillText("Top 10 Scores:", 500, 600);
+
+  highScores.forEach((score, index) => {
+    context.fillText(`${index + 1}. ${score}`, 500, 632 + index * 32);
+  });
 }
 
 let gameInterval = setInterval(renderGame, 100);
